@@ -1,3 +1,7 @@
+**UPDATE NOTICE** - This tool has been updated to work with Visual Studio 2022
+
+---
+
 # EoSTools
 Tools that are useful for the MMORPG, Echo of Soul.
 

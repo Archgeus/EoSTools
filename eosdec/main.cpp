@@ -49,37 +49,37 @@
  *
  * @return Non-important return value.
  */
-int __cdecl main(int argc, char* argv[])
+int __cdecl wmain(int argc, wchar_t* argv[])
 {
-    printf_s("Echo of Soul - File Decryption Tool\r\n");
-    printf_s("(c) 2015 atom0s [atom0s@live.com]\r\n");
+    wprintf_s(L"Echo of Soul - File Decryption Tool\r\n");
+    wprintf_s(L"(c) 2015 atom0s [atom0s@live.com]\r\n");
 
     // File decryption function..
-    auto decrypt = [&](const std::string& filePath) -> bool
+    auto decrypt = [&](const std::wstring& filePath) -> bool
     {
-        printf_s("\r\n[*] INFO : Processing file: %s\r\n", ::PathFindFileName(filePath.c_str()));
+        wprintf_s(L"\r\n[*] INFO : Processing file: %s\r\n", ::PathFindFileNameW(filePath.c_str()));
 
         // Ensure the file does not exist..
-        if (::GetFileAttributes(filePath.c_str()) == INVALID_FILE_ATTRIBUTES)
+        if (::GetFileAttributesW(filePath.c_str()) == INVALID_FILE_ATTRIBUTES)
         {
-            printf_s("[*] ERROR: File does not exist; cannot decrypt!\r\n");
+            wprintf_s(L"[*] ERROR: File does not exist; cannot decrypt!\r\n");
             return false;
         }
 
         // Obtain the files directory..
-        char fileDirectory[MAX_PATH] = { 0 };
-        strcpy_s(fileDirectory, filePath.c_str());
-        ::PathRemoveFileSpec(fileDirectory);
+        wchar_t fileDirectory[MAX_PATH] = { 0 };
+        wcscpy_s(fileDirectory, filePath.c_str());
+        ::PathRemoveFileSpecW(fileDirectory);
 
         // Set the files working directory..
-        if (strlen(fileDirectory) > 0)
-            ::SetCurrentDirectory(fileDirectory);
+        if (wcslen(fileDirectory) > 0)
+            ::SetCurrentDirectoryW(fileDirectory);
 
         // Open the file for reading..
         FILE* f = nullptr;
-        if (fopen_s(&f, filePath.c_str(), "rb") != ERROR_SUCCESS)
+        if (_wfopen_s(&f, filePath.c_str(), L"rb") != ERROR_SUCCESS)
         {
-            printf_s("[*] ERROR: Failed to open file for reading; cannot decrypt!\r\n");
+            wprintf_s(L"[*] ERROR: Failed to open file for reading; cannot decrypt!\r\n");
             return false;
         }
 
@@ -97,7 +97,7 @@ int __cdecl main(int argc, char* argv[])
         if (*(unsigned long*)data != EoS_Encryption::EoS_FileSignature)
         {
             delete[] data;
-            printf_s("[*] ERROR: File does not have proper signature; cannot decrypt!\r\n");
+            wprintf_s(L"[*] ERROR: File does not have proper signature; cannot decrypt!\r\n");
             return false;
         }
 
@@ -109,7 +109,7 @@ int __cdecl main(int argc, char* argv[])
         if (!EoS_Encryption::CreateHashObjects(&provider, &hash, &key))
         {
             delete[] data;
-            printf_s("[*] ERROR: Could not obtain required hash data; cannot decrypt!\r\n");
+            wprintf_s(L"[*] ERROR: Could not obtain required hash data; cannot decrypt!\r\n");
             return false;
         }
 
@@ -128,16 +128,16 @@ int __cdecl main(int argc, char* argv[])
         } while (sizeLeft);
 
         // Write the decrypted data to a new decrypted file..
-        auto str = filePath + ".dec";
-        if (fopen_s(&f, str.c_str(), "wb") == ERROR_SUCCESS)
+        auto str = filePath + L".dec";
+        if (_wfopen_s(&f, str.c_str(), L"wb") == ERROR_SUCCESS)
         {
             fwrite(data + 4, size - 4, 1, f);
             fclose(f);
 
-            printf_s("[*] INFO : Success! File dumped.\r\n");
+            wprintf_s(L"[*] INFO : Success! File dumped.\r\n");
         }
         else
-            printf_s("[*] ERROR: Could not write decrypted file!\r\n");
+            wprintf_s(L"[*] ERROR: Could not write decrypted file!\r\n");
 
         delete[] data;
         return true;
@@ -146,8 +146,8 @@ int __cdecl main(int argc, char* argv[])
     // Ensure we were passed arguments..
     if (argc <= 1)
     {
-        printf_s("[*] ERROR: Invalid usage!\r\n");
-        printf_s("[*] ERROR: Usage: eosdec.exe [file] [file] [file]\r\n");
+        wprintf_s(L"[*] ERROR: Invalid usage!\r\n");
+        wprintf_s(L"[*] ERROR: Usage: eosdec.exe [file] [file] [file]\r\n");
         return 0;
     }
 
